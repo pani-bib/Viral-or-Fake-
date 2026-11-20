@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viral or Fake?: ภารกิจกู้ชีพแอดมินเพจโรงเรียน</title>
+    <!-- โหลด Tailwind CSS (พร้อมมี Fallback CSS ด้านล่างเพื่อให้รันแบบ Offline 100% ได้แม้ไม่มีอินเทอร์เน็ต) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            brandBlue: '#0284C7',
+                            brandSky: '#0EA5E9',
+                            brandMint: '#10B981',
+                            brandMintLight: '#34D399',
+                            brandRed: '#EF4444',
+                        },
+                        fontFamily: {
+                            sans: ['"Noto Sans Thai"', '"Sarabun"', '"Prompt"', 'system-ui', '-apple-system', 'sans-serif'],
+                        }
+                    }
+                }
+            };
+        }
+    </script>
+    <style>
+        /* ==========================================================================
+           BASE STYLES & OFFLINE FALLBACKS (รองรับการทำงานแบบ Offline 100%)
+           ========================================================================== */
+        :root {
+            --bg-main: #F0F9FF;
+            --card-bg: #FFFFFF;
+            --primary-blue: #0284C7;
+            --sky-blue: #0EA5E9;
+            --mint-green: #10B981;
+            --alert-red: #EF4444;
+            --text-dark: #0F172A;
+            --text-muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Thai', 'Sarabun', 'Prompt', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 50%, #ECFDF5 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Animations */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.08); opacity: 0.3; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        @keyframes scanLine {
+            0% { top: 0%; opacity: 0.9; }
+            50% { top: 96%; opacity: 1; }
+            100% { top: 0%; opacity: 0.9; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.85) translateY(12px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        @keyframes floatScore {
+            0% { transform: translateY(0) scale(0.8); opacity: 1; }
+            100% { transform: translateY(-45px) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes shakeHard {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .animate-float {
+            animation: floatSlow 3.5s ease-in-out infinite;
+        }
+
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .animate-shake {
+            animation: shakeHard 0.45s ease-in-out;
+        }
+
+        .scanner-laser {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #0EA5E9, #10B981, #0EA5E9, transparent);
+            box-shadow: 0 0 12px #0EA5E9, 0 0 20px #10B981;
+            animation: scanLine 2.4s linear infinite;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .floating-score-popup {
+            position: fixed;
+            z-index: 9999;
+            font-weight: 800;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatScore 1.2s ease-out forwards;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Smooth Scrollbar for Chat Container */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 999px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 999px;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        /* Fallback utility classes in case Tailwind CDN is blocked offline */
+        .hidden { display: none !important; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.12);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-sky-200 selection:text-sky-900">
+
+    <!-- ==========================================================================
+         CANVAS CONFETTI LAYER (สำหรับฉลองฉากจบ True Ending)
+         ========================================================================== -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50 hidden"></canvas>
+
+    <!-- ==========================================================================
+         MAIN APPLICATION CONTAINER
+         ========================================================================== -->
+    <div id="app" class="min-h-screen flex flex-col justify-between max-w-4xl mx-auto px-3 py-3 sm:px-6 sm:py-5">
+
+        <!-- ======================================================================
+             SCREEN 1: START SCREEN (หน้าต้อนรับและตั้งค่า)
+             ====================================================================== -->
+        <section id="start-screen" class="my-auto animate-pop">
+            <div class="glass-panel rounded-3xl p-5 sm:p-8 border-2 border-sky-100 relative overflow-hidden">
+                <!-- Decorative Top Gradient Bar -->
+                <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-sky-500 via-emerald-400 to-sky-600"></div>
+
+                <!-- Header Top Controls -->
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold bg-sky-100 text-sky-800 border border-sky-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        วิทยาการคำนวณ ม.4 - ม.6 | AI Literacy
+                    </span>
+                    <button id="btn-sound-start" onclick="toggleSound()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+                        <span id="sound-icon-start">🔊</span>
+                        <span id="sound-text-start">เสียง: เปิด</span>
+                    </button>
+                </div>
+
+                <!-- Hero Content Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center my-2">
+                    <!-- Left: Title, Description, Settings -->
+                    <div class="md:col-span-7 space-y-4">
+                        <div>
+                            <div class="inline-block px-3 py-1 mb-2 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-bold tracking-wide">
+                                📱 SOCIAL MEDIA & FACT-CHECKING SIMULATOR
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 leading-tight">
+                                <span class="text-sky-600">Viral</span> or <span class="text-red-500">Fake?</span>
+                                <span class="block text-xl sm:text-2xl text-slate-700 mt-1 font-bold">ภารกิจกู้ชีพแอดมินเพจโรงเรียน</span>
+                            </h1>
+                        </div>
+
+                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+                            สวมบทบาทเป็น <strong class="text-sky-700">"แอดมินเพจข่าวสารโรงเรียน"</strong> รับมือกับข่าวด่วน 3 ภารกิจสุดป่วนใน 1 วัน! 
+                            วิเคราะห์และจับผิดสื่อที่สร้างจาก AI ทั้ง <span class="font-semibold text-slate-800">ภาพตัดต่อ, เสียง Deepfake</span> และ <span class="font-semibold text-slate-800">อาการ AI หลอน</span> ก่อนกดแชร์สู่สายตาคนทั้งโรงเรียน
+                        </p>
+
+                        <!-- High Score & Stats Banner (LocalStorage) -->
+                        <div class="grid grid-cols-2 gap-3 bg-sky-50/90 border border-sky-200/80 rounded-2xl p-3.5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold shadow-sm">
+                                    🏆
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 font-medium">สถิติสูงสุด (High Score)</div>
+                                    <div id="start-highscore" class="text-lg font-extrabold text-sky-700">ยังไม่มีสถิติ</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 border-l border-sky-200 pl-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold shadow-sm">
+                                    🛡️
+                                </div>
+                                <div>
+                                    <div class="text-xs text-slate-500 font-medium">ฉากจบสูงสุด</div>
+                                    <div id="start-best-badge" class="text-sm font-bold text-emerald-700">รอการปลดล็อก</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timer Mode Selector -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5">
+                            <div class="text-xs font-bold text-slate-600 mb-2 flex items-center gap-1.5">
+                                <span>⏱️ เลือกโหมดเวลาการเล่น:</span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button type="button" id="mode-timed-btn" onclick="setTimerMode(true)" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border-2 border-sky-500 bg-sky-50 text-sky-800 transition cursor-pointer">
+                                    <span>⚡ จับเวลา 60 วิ/ด่าน</span>
+                                </button>
+                                <button type="button" id="mode-untimed-btn" onclick="setTimerMode(false)" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold border-2 border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition cursor-pointer">
+                                    <span>☕ ไม่จำกัดเวลา (วิเคราะห์ชิลๆ)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Primary Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                            <button onclick="startGame()" class="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-extrabold text-base sm:text-lg shadow-lg shadow-sky-500/30 transform active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer">
+                                <span>🚀 เริ่มปฏิบัติภารกิจ</span>
+                            </button>
+                            <button onclick="toggleHowToModal(true)" class="py-3.5 px-5 rounded-2xl bg-white hover:bg-sky-50 text-sky-700 font-bold text-sm sm:text-base border-2 border-sky-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                                <span>📖 คู่มือวิธีเล่น</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Custom 2D SVG Illustration (Thai High School Admin + AI Helper) -->
+                    <div class="md:col-span-5 flex flex-col items-center justify-center">
+                        <div class="relative w-full max-w-[290px] aspect-square bg-gradient-to-b from-sky-100 to-emerald-50 rounded-3xl p-4 border-2 border-white shadow-inner flex items-center justify-center animate-float">
+                            <!-- Inline SVG Character Art -->
+                            <svg viewBox="0 0 300 300" class="w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Background Decorative Circles & Social Icons -->
+                                <circle cx="150" cy="155" r="110" fill="#FFFFFF" opacity="0.75"/>
+                                <circle cx="62" cy="70" r="22" fill="#E0F2FE" stroke="#0EA5E9" stroke-width="2"/>
+                                <text x="62" y="76" text-anchor="middle" font-size="18">🔍</text>
+                                
+                                <circle cx="242" cy="82" r="24" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+                                <text x="242" y="89" text-anchor="middle" font-size="20">✅</text>
+
+                                <rect x="35" y="195" width="54" height="32" rx="12" fill="#FEE2E2" stroke="#EF4444" stroke-width="2"/>
+                                <text x="62" y="216" text-anchor="middle" font-size="12" font-weight="bold" fill="#DC2626">FAKE!</text>
+
+                                <!-- AI Floating Helper Bot (Top Right) -->
+                                <g transform="translate(195, 130)">
+                                    <rect x="0" y="12" width="58" height="44" rx="16" fill="#0284C7" stroke="#FFFFFF" stroke-width="3"/>
+                                    <rect x="8" y="20" width="42" height="24" rx="10" fill="#0F172A"/>
+                                    <!-- Bot Eyes -->
+                                    <circle cx="21" cy="32" r="4.5" fill="#34D399"/>
+                                    <circle cx="37" cy="32" r="4.5" fill="#34D399"/>
+                                    <!-- Antenna -->
+                                    <line x1="29" y1="12" x2="29" y2="2" stroke="#0284C7" stroke-width="3" stroke-linecap="round"/>
+                                    <circle cx="29" cy="2" r="4" fill="#10B981"/>
+                                    <text x="29" y="68" text-anchor="middle" font-size="10" font-weight="bold" fill="#0369A1">AI-Guard</text>
+                                </g>
+
+                                <!-- Thai High School Student Character -->
+                                <!-- Hair Back -->
+                                <path d="M95 115 C90 65, 200 65, 195 115 L198 155 L92 155 Z" fill="#1E293B"/>
+                                <!-- Neck -->
+                                <rect x="134" y="158" width="22" height="24" rx="8" fill="#FDBA74"/>
+                                <!-- Thai Student White Uniform Shirt -->
+                                <path d="M82 260 C82 205, 108 182, 145 182 C182 182, 208 205, 208 260 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2.5"/>
+                                <!-- Shirt Collar -->
+                                <polygon points="145,184 122,182 132,206" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+                                <polygon points="145,184 168,182 158,206" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.5"/>
+                                <!-- Center Placket & Buttons -->
+                                <line x1="145" y1="196" x2="145" y2="260" stroke="#CBD5E1" stroke-width="2"/>
+                                <circle cx="145" cy="212" r="2.5" fill="#94A3B8"/>
+                                <circle cx="145" cy="232" r="2.5" fill="#94A3B8"/>
+                                <!-- Thai School Embroidered Initials "ว.พ." on Chest -->
+                                <text x="168" y="216" font-size="12" font-weight="bold" fill="#0284C7">ว.พ.</text>
+                                <text x="168" y="226" font-size="7" font-weight="bold" fill="#EF4444">★★★</text>
+
+                                <!-- Face -->
+                                <rect x="106" y="92" width="78" height="76" rx="34" fill="#FED7AA"/>
+                                <!-- Blush -->
+                                <ellipse cx="120" cy="142" rx="7" ry="4" fill="#FDA4AF" opacity="0.7"/>
+                                <ellipse cx="170" cy="142" rx="7" ry="4" fill="#FDA4AF" opacity="0.7"/>
+                                <!-- Eyes -->
+                                <circle cx="128" cy="130" r="5.5" fill="#0F172A"/>
+                                <circle cx="130" cy="128" r="2" fill="#FFFFFF"/>
+                                <circle cx="162" cy="130" r="5.5" fill="#0F172A"/>
+                                <circle cx="164" cy="128" r="2" fill="#FFFFFF"/>
+                                <!-- Eyebrows -->
+                                <path d="M120 120 Q128 116 135 120" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                <path d="M155 120 Q162 116 170 120" stroke="#1E293B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                <!-- Confident Smile -->
+                                <path d="M137 146 Q145 154 153 146" stroke="#9A3412" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+
+                                <!-- Front Hair Bangs -->
+                                <path d="M102 118 C105 82, 185 82, 188 118 C175 102, 160 112, 148 100 C135 112, 118 102, 102 118 Z" fill="#1E293B"/>
+
+                                <!-- Admin Headphones -->
+                                <path d="M98 128 C94 74, 196 74, 192 128" stroke="#0EA5E9" stroke-width="7" fill="none" stroke-linecap="round"/>
+                                <rect x="90" y="114" width="14" height="30" rx="7" fill="#0284C7" stroke="#FFFFFF" stroke-width="2"/>
+                                <rect x="186" y="114" width="14" height="30" rx="7" fill="#0284C7" stroke="#FFFFFF" stroke-width="2"/>
+                                <!-- Mic Boom -->
+                                <path d="M97 140 Q105 156 128 154" stroke="#334155" stroke-width="2.5" fill="none"/>
+                                <circle cx="130" cy="154" r="3.5" fill="#10B981"/>
+
+                                <!-- Tablet Held in Hands -->
+                                <rect x="104" y="226" width="82" height="50" rx="10" fill="#1E293B" stroke="#0EA5E9" stroke-width="2.5"/>
+                                <circle cx="145" cy="251" r="12" fill="#10B981"/>
+                                <path d="M140 251 L144 255 L151 247" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <span class="text-xs font-bold text-slate-600 bg-white/80 px-3 py-1 rounded-full border border-slate-200">
+                                เพจ: สภานักเรียน & ข่าวสาร ร.ร.วิทยาการพิทยาคม
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             SCREEN 2: MAIN GAMEPLAY UI (หน้าจอเล่นเกมหลัก)
+             ====================================================================== -->
+        <section id="gameplay-screen" class="hidden flex-col gap-3 sm:gap-4 my-auto animate-pop">
+            
+            <!-- TOP BAR: Trust Score, Mission Counter, Timer, Sound -->
+            <header class="glass-panel rounded-2xl p-3 sm:p-4 border border-sky-100">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <!-- Trust Score Meter -->
+                    <div class="flex-1 min-w-[200px]">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs sm:text-sm font-bold text-slate-700 flex items-center gap-1.5">
+                                <span>🛡️ ค่าความน่าเชื่อถือเพจ (Trust Score)</span>
+                            </span>
+                            <span id="trust-score-text" class="text-sm sm:text-base font-extrabold text-sky-700">100 คะแนน</span>
+                        </div>
+                        <div class="w-full h-3.5 bg-slate-200 rounded-full overflow-hidden p-0.5 shadow-inner">
+                            <div id="trust-score-bar" class="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-400 transition-all duration-500" style="width: 57%;"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400 mt-0.5 font-medium">
+                            <span>0 (ปิดเพจ)</span>
+                            <span>80 (เกณฑ์รอด)</span>
+                            <span>140+ (ดีเด่น)</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Status Badges -->
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <!-- Mission Step Pill -->
+                        <div class="px-3 py-2 rounded-xl bg-sky-100 text-sky-900 font-extrabold text-xs sm:text-sm border border-sky-200 text-center">
+                            <div class="text-[10px] text-sky-600 font-semibold uppercase">ภารกิจ</div>
+                            <div id="mission-indicator">1 / 3</div>
+                        </div>
+
+                        <!-- Timer Pill -->
+                        <div id="timer-badge" class="px-3 py-2 rounded-xl bg-amber-50 text-amber-800 font-extrabold text-xs sm:text-sm border border-amber-200 text-center min-w-[74px]">
+                            <div class="text-[10px] text-amber-600 font-semibold">เวลา</div>
+                            <div id="timer-display">60s</div>
+                        </div>
+
+                        <!-- Sound Toggle -->
+                        <button onclick="toggleSound()" title="เปิด/ปิดเสียง" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer">
+                            <span id="sound-icon-game" class="text-base sm:text-lg">🔊</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- MIDDLE AREA: School Page Chat Inbox & Evidence Viewer -->
+            <main class="glass-panel rounded-3xl border border-sky-100 overflow-hidden flex flex-col">
+                <!-- Social App Chat Header -->
+                <div class="bg-gradient-to-r from-sky-600 to-sky-500 text-white px-4 py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-white text-sky-600 font-extrabold flex items-center justify-center shadow text-sm">
+                            ว.พ.
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm sm:text-base flex items-center gap-1.5">
+                                <span>กล่องข้อความเพจโรงเรียน (Admin Inbox)</span>
+                                <span class="inline-block w-2 h-2 rounded-full bg-emerald-300"></span>
+                            </div>
+                            <div id="mission-time-context" class="text-xs text-sky-100">เวลา 07:15 น. • มีข้อความด่วนส่งเข้ามา!</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Scanner Hint Button (-5 Points) -->
+                    <button id="btn-ai-hint" onclick="useAiScannerHint()" class="px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-1.5 transition transform active:scale-95 cursor-pointer">
+                        <span>🔍 แว่นขยายสแกน AI</span>
+                        <span class="bg-slate-900/15 px-1.5 py-0.5 rounded text-[11px]">-5</span>
+                    </button>
+                </div>
+
+                <!-- Chat Feed Body -->
+                <div id="chat-body" class="p-4 sm:p-5 space-y-4 bg-slate-50/70 max-h-[56vh] sm:max-h-[60vh] overflow-y-auto chat-scroll">
+                    <!-- Dynamic Mission Chat & Evidence Rendered Here by JS -->
+                </div>
+            </main>
+
+            <!-- BOTTOM ACTION BAR: 3 Large Decision Buttons -->
+            <footer class="glass-panel rounded-2xl p-3 sm:p-4 border border-sky-100">
+                <div class="text-xs font-bold text-slate-500 mb-2 text-center sm:text-left">
+                    ⚡ ในฐานะแอดมินเพจ คุณจะตัดสินใจอย่างไรกับข้อมูลนี้?
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                    <!-- Button 1: Rush Post -->
+                    <button id="btn-action-post" onclick="handleDecision('post')" class="py-3 px-4 rounded-2xl bg-red-500 hover:bg-red-600 text-white font-extrabold text-sm sm:text-base shadow-md shadow-red-500/20 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                        <span>📢 รีบโพสต์ทันที</span>
+                    </button>
+
+                    <!-- Button 2: Verify First (Opens Quiz) -->
+                    <button id="btn-action-verify" onclick="handleDecision('verify')" class="py-3 px-4 rounded-2xl bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-extrabold text-sm sm:text-base shadow-md shadow-sky-500/25 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer ring-2 ring-sky-300">
+                        <span>🔍 ตรวจสอบข้อมูลก่อน</span>
+                    </button>
+
+                    <!-- Button 3: Delete Silently -->
+                    <button id="btn-action-delete" onclick="handleDecision('delete')" class="py-3 px-4 rounded-2xl bg-slate-600 hover:bg-slate-700 text-white font-extrabold text-sm sm:text-base shadow-md flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                        <span>🗑️ ลบทิ้งทันที</span>
+                    </button>
+                </div>
+            </footer>
+        </section>
+
+        <!-- ======================================================================
+             SCREEN 3: ENDING & INDIVIDUAL LEARNING DASHBOARD (หน้าสรุปผล)
+             ====================================================================== -->
+        <section id="ending-screen" class="hidden my-auto animate-pop">
+            <div class="glass-panel rounded-3xl p-5 sm:p-8 border-2 border-sky-100 space-y-6">
+                
+                <!-- Ending Hero Banner -->
+                <div id="ending-header-card" class="rounded-3xl p-5 sm:p-6 text-center border-2 relative overflow-hidden">
+                    <div id="ending-badge-svg" class="w-28 h-28 mx-auto mb-3 animate-float">
+                        <!-- Custom SVG Medal/Badge injected by JS -->
+                    </div>
+                    <div id="ending-tag" class="inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2">
+                        TRUE ENDING
+                    </div>
+                    <h2 id="ending-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
+                        เพจคุณภาพดีเด่นระดับประเทศ!
+                    </h2>
+                    <p id="ending-desc" class="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                        คำอธิบายฉากจบ...
+                    </p>
+
+                    <!-- New High Score Banner -->
+                    <div id="new-highscore-banner" class="hidden mt-3 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow">
+                        <span>🎉 สถิติใหม่! คุณทำคะแนน Trust Score สูงสุดของเครื่องนี้!</span>
+                    </div>
+                </div>
+
+                <!-- Individual Learning Analytics Dashboard -->
+                <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                        <h3 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                            <span>📊 Learning Analytics Dashboard</span>
+                            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-700">สรุปผลรายบุคคล</span>
+                        </h3>
+                        <span class="text-xs text-slate-400 font-medium">รายวิชาวิทยาการคำนวณ</span>
+                    </div>
+
+                    <!-- Top KPI Metrics -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-sky-50 rounded-2xl p-4 border border-sky-100 text-center">
+                            <div class="text-xs font-bold text-sky-700 mb-1">คะแนน Trust Score สุทธิ</div>
+                            <div id="dash-final-score" class="text-3xl font-extrabold text-sky-900">175</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">จากเริ่มต้น 100 คะแนน</div>
+                        </div>
+
+                        <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 text-center">
+                            <div class="text-xs font-bold text-emerald-700 mb-1">ความแม่นยำการวิเคราะห์ (Accuracy)</div>
+                            <div id="dash-accuracy" class="text-3xl font-extrabold text-emerald-900">100%</div>
+                            <div id="dash-accuracy-detail" class="text-[11px] text-slate-500 mt-0.5">ตรวจสอบถูกต้อง 3/3 ภารกิจ</div>
+                        </div>
+
+                        <div class="bg-amber-50 rounded-2xl p-4 border border-amber-100 text-center">
+                            <div class="text-xs font-bold text-amber-700 mb-1">การใช้เครื่องมือสแกน AI</div>
+                            <div id="dash-hints-used" class="text-3xl font-extrabold text-amber-900">0 ครั้ง</div>
+                            <div class="text-[11px] text-slate-500 mt-0.5">ทักษะการสังเกตด้วยตนเอง</div>
+                        </div>
+                    </div>
+
+                    <!-- 3-Domain Skill Mastery Breakdown -->
+                    <div class="space-y-3">
+                        <h4 class="text-sm font-extrabold text-slate-700">🎯 ระดับทักษะการรู้เท่าทันสื่อ AI ทั้ง 3 ด้าน:</h4>
+                        <div id="dash-skills-list" class="space-y-2.5">
+                            <!-- Skill bars injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Personalized Pedagogical Recommendation -->
+                    <div class="bg-gradient-to-r from-sky-50 to-emerald-50 rounded-2xl p-4 border border-sky-200">
+                        <div class="font-extrabold text-sm text-sky-900 mb-1.5 flex items-center gap-1.5">
+                            <span>💡 ข้อเสนอแนะเพื่อการพัฒนาเพิ่มเติม (AI Mentor Feedback):</span>
+                        </div>
+                        <p id="dash-recommendation" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            คำแนะนำรายบุคคล...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Footer -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <button onclick="resetAndPlayAgain()" class="py-3.5 px-8 rounded-2xl bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-extrabold text-base shadow-lg shadow-sky-500/25 flex items-center justify-center gap-2 transition transform active:scale-95 cursor-pointer">
+                        <span>🔄 เล่นใหม่อีกครั้ง</span>
+                    </button>
+                    <button onclick="backToHome()" class="py-3.5 px-6 rounded-2xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-base border-2 border-slate-200 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <span>🏠 กลับหน้าหลัก</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 1: HOW TO PLAY GUIDE (คู่มือวิธีเล่น)
+         ========================================================================== -->
+    <div id="howto-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sky-100 animate-pop max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                <h3 class="text-xl font-extrabold text-sky-800 flex items-center gap-2">
+                    <span>📖 คู่มือปฏิบัติงานแอดมินเพจ</span>
+                </h3>
+                <button onclick="toggleHowToModal(false)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center cursor-pointer">✕</button>
+            </div>
+            <div class="space-y-3 text-sm text-slate-600">
+                <div class="p-3 rounded-2xl bg-sky-50 border border-sky-100">
+                    <strong class="text-sky-800 block mb-1">1. เป้าหมายภารกิจ:</strong>
+                    คุณเริ่มต้นด้วย <strong class="text-sky-700">Trust Score 100 คะแนน</strong> ต้องคัดกรองข่าวด่วนทั้ง 3 ด่านให้ถูกต้องเพื่อรักษาระดับความน่าเชื่อถือของเพจโรงเรียน
+                </div>
+                <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
+                    <strong class="text-emerald-800 block mb-1">2. ตัวเลือกการตัดสินใจ 3 รูปแบบ:</strong>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><strong class="text-sky-700">🔍 ตรวจสอบข้อมูลก่อน:</strong> เข้าสู่โหมดวิเคราะห์และตอบคำถาม Quiz จับผิดสื่อ AI (ตอบถูก <strong>+25</strong> / ตอบผิด <strong>+10</strong>)</li>
+                        <li><strong class="text-red-600">📢 รีบโพสต์ทันที:</strong> แชร์ข่าวปลอมโดยไม่เช็ก เพจโดนทัวร์ลง! (<strong>-40 คะแนน</strong>)</li>
+                        <li><strong class="text-slate-700">🗑️ ลบทิ้งทันที:</strong> ปลอดภัยแต่ไม่ได้แจ้งเตือนลูกเพจ (<strong>+5 คะแนน</strong>)</li>
+                    </ul>
+                </div>
+                <div class="p-3 rounded-2xl bg-amber-50 border border-amber-100">
+                    <strong class="text-amber-800 block mb-1">3. ตัวช่วยแว่นขยายสแกน AI (-5 คะแนน):</strong>
+                    หากดูไม่ออก สามารถกดปุ่มสแกน AI ได้ด่านละ 1 ครั้ง เพื่อไฮไลต์จุดผิดปกติบนหลักฐาน
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+                    <strong class="text-slate-800 block mb-1">4. เกณฑ์ฉากจบ (Ending):</strong>
+                    <div class="text-xs space-y-1 mt-1">
+                        <div>🏆 <strong>140+ คะแนน:</strong> True Ending (เพจคุณภาพดีเด่นระดับประเทศ)</div>
+                        <div>🛡️ <strong>80 - 135 คะแนน:</strong> Normal Ending (แอดมินผู้รอดชีวิต)</div>
+                        <div>🚨 <strong>ต่ำกว่า 80 คะแนน:</strong> Bad Ending (เพจโดนทัวร์ลงและถูกปิดถาวร)</div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="toggleHowToModal(false)" class="mt-5 w-full py-3 rounded-2xl bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-sm transition cursor-pointer">
+                เข้าใจแล้ว พร้อมลุย!
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 2: FACT-CHECKING QUIZ MODAL (หน้าต่างตอบคำถามจับผิดสื่อ AI)
+         ========================================================================== -->
+    <div id="quiz-modal" class="fixed inset-0 bg-slate-900/65 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border-2 border-sky-200 animate-pop max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 text-xs font-extrabold">
+                    🕵️‍♂️ โหมดตรวจสอบข้อเท็จจริง (Fact-Checking Quiz)
+                </span>
+                <button onclick="closeQuizModal()" class="text-xs font-bold text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg bg-slate-100 cursor-pointer">
+                    กลับไปดูหลักฐาน
+                </button>
+            </div>
+            <h3 id="quiz-question-title" class="text-base sm:text-lg font-extrabold text-slate-900 mb-4 leading-snug">
+                คำถามประจำด่าน...
+            </h3>
+            <div id="quiz-options-container" class="space-y-2.5">
+                <!-- 4 Quiz Options injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 3: REAL-TIME FEEDBACK & LIVE COMMENTS MODAL (หน้าต่างเฉลยและคอมเมนต์)
+         ========================================================================== -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-5 sm:p-6 shadow-2xl border-2 border-slate-100 animate-pop max-h-[92vh] overflow-y-auto space-y-4">
+            
+            <!-- Result Status Header -->
+            <div id="fb-status-banner" class="rounded-2xl p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span id="fb-status-icon" class="text-3xl">✅</span>
+                    <div>
+                        <h3 id="fb-status-title" class="text-lg font-extrabold">ยอดเยี่ยม! จับผิดได้แม่นยำ</h3>
+                        <p id="fb-status-subtitle" class="text-xs font-medium opacity-90">คุณปกป้องลูกเพจจากข่าวปลอมได้สำเร็จ</p>
+                    </div>
+                </div>
+                <div id="fb-score-delta" class="text-xl sm:text-2xl font-extrabold px-3 py-1 rounded-xl bg-white/80 shadow-sm">
+                    +25
+                </div>
+            </div>
+
+            <!-- Educational Fact-Checking Explanation -->
+            <div class="bg-sky-50/90 rounded-2xl p-4 border border-sky-200">
+                <div class="text-xs font-extrabold text-sky-800 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+                    <span>🎓 หลักการตรวจสอบสื่อ AI (AI Literacy Insight)</span>
+                </div>
+                <p id="fb-explanation" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    คำอธิบายจุดจับผิด...
+                </p>
+            </div>
+
+            <!-- Simulated Real-Time Social Media Comments -->
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200">
+                <div class="text-xs font-extrabold text-slate-600 mb-2.5 flex items-center justify-between">
+                    <span>💬 ความคิดเห็นจากลูกเพจแบบเรียลไทม์:</span>
+                    <span class="text-[11px] text-emerald-600 font-bold">● Live Feed</span>
+                </div>
+                <div id="fb-comments-list" class="space-y-2.5">
+                    <!-- Dynamic follower comments injected here -->
+                </div>
+            </div>
+
+            <!-- Next Mission Button -->
+            <button id="btn-next-mission" onclick="proceedToNextMission()" class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-sky-600 to-emerald-500 hover:from-sky-700 hover:to-emerald-600 text-white font-extrabold text-base shadow-lg transition transform active:scale-95 cursor-pointer">
+                ➡️ ไปยังภารกิจถัดไป
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT GAME ENGINE, DATA CONFIG & WEB AUDIO SYNTHESIZER
+         ========================================================================== -->
+    <script>
+        /**
+         * ============================================================================
+         * [ส่วนที่ 1: ฐานข้อมูลโจทย์และเนื้อหาเกม - MISSIONS_DATA]
+         * คุณครูผู้สอนสามารถแก้ไขข้อความ โจทย์คำถาม ตัวเลือก และคำอธิบายเฉลยในส่วนนี้ได้ทันที
+         * ============================================================================
+         */
+        const MISSIONS_DATA = [
+            {
+                id: 1,
+                skillKey: 'image',
+                skillName: 'การจับผิดภาพสังเคราะห์ (AI Image Forensics)',
+                timeLabel: 'เวลา 07:15 น. • แชตด่วนก่อนเข้าแถวเคารพธงชาติ',
+                senderName: 'ผู้หวังดี (บัญชีไม่ระบุตัวตน)',
+                senderRole: 'ส่งรูปภาพเข้ามาในกล่องข้อความ',
+                chatIntro: 'แอดมิน!! รีบโพสต์ประกาศนี้ด่วนเลย เพื่อนๆ กำลังนั่งรถเมล์มาโรงเรียนกันแล้ว ฝนตกท่อประปาแตก โรงเรียนสั่งหยุดเรียนวันนี้ 1 วัน!!',
+                evidenceType: 'image',
+                hintText: 'สแกนพบ 3 จุดผิดปกติ: 1) ตัวอักษรบนตราโรงเรียนบิดเบี้ยวอ่านไม่ออก 2) ลายเซ็น ผอ. กลืนหายไปกับเส้นบรรทัด 3) เงาของกระดาษลอยผิดทิศทางแสง',
+                quiz: {
+                    question: 'จากการตรวจสอบภาพ "ประกาศหยุดเรียนกะทันหัน" ข้อใดคือหลักฐานชัดเจนที่สุดว่าภาพนี้สร้างหรือตัดต่อด้วย AI?',
+                    options: [
+                        'ตัวอักษรบนตราโลโก้โรงเรียนบิดเบี้ยวผิดรูป ลายเซ็นกลืนกับเส้น และเงากระดาษลอยผิดธรรมชาติ',
+                        'กระดาษประกาศใช้ฟอนต์สารบรรณราชการที่มีขนาดตัวอักษรใหญ่เกินไป',
+                        'วันที่ในประกาศตรงกับวันเปิดภาคเรียนตามปกติของโรงเรียน',
+                        'มีการระบุชื่อโรงเรียนและตำแหน่งผู้อำนวยการไว้ด้านล่างของกระดาษ'
+                    ],
+                    correctIndex: 0
+                },
+                explanation: 'ภาพที่สร้างจาก Generative AI มักมีจุดอ่อนในการเรนเดอร์ "ตัวอักษรขนาดเล็กในโลโก้" ทำให้ตัวอักษรภาษาไทยบิดเบี้ยวคล้ายอักษรต่างดาว รวมถึงลายเซ็นที่กลืนไปกับเส้นบรรทัด และแสงเงาของวัตถุที่ไม่สอดคล้องกับพื้นหลัง ก่อนแชร์ประกาศสำคัญต้องเช็กกับเว็บไซต์ทางการของโรงเรียนเสมอ!',
+                comments: {
+                    correct: [
+                        { user: 'ครูสมศรี (ฝ่ายวิชาการ)', badge: 'ผู้ดูแล', text: 'ขอบคุณแอดมินมากครับที่ช่วยเช็กกับทางโรงเรียนก่อน วันนี้เปิดเรียนตามปกติ น้ำประปาไม่ได้แตกครับ!' },
+                        { user: 'นัท ม.5/2', badge: 'แฟนตัวยง', text: 'เกือบเลี้ยวรถกลับบ้านแล้ว ดีนะที่เพจโรงเรียนออกมาเตือนทัน 🙌' },
+                        { user: 'แพรว สภานักเรียน', badge: 'ทีมงาน', text: 'ซูมดูตราโรงเรียนคือเบี้ยวมาก ชัดเลยว่าภาพ AI ปั่นข่าว!' }
+                    ],
+                    wrongQuiz: [
+                        { user: 'บอส ม.6/1', badge: 'ลูกเพจ', text: 'แอดมินช่วยเบรกข่าวปลอมไว้ได้ทัน แต่ครั้งหน้าลองซูมดูตราโลโก้กับลายเซ็นนะ ชัดเลยว่า AI!' },
+                        { user: 'ครูสมศรี (ฝ่ายวิชาการ)', badge: 'ผู้ดูแล', text: 'ดีมากที่ไม่รีบโพสต์ครับ การชะลอเพื่อตรวจสอบคือก้าวแรกของการรู้เท่าทันสื่อ' }
+                    ],
+                    rushedPost: [
+                        { user: 'ครูสมศรี (ฝ่ายวิชาการ)', badge: 'ผู้ดูแล', text: 'แอดมิน! ทำไมไม่เช็กกับห้องธุรการก่อนโพสต์ นี่มันประกาศปลอม นักเรียนเข้าใจผิดกันทั้งโรงเรียนแล้ว!' },
+                        { user: 'มินท์ ม.4/3', badge: 'ลูกเพจ', text: 'โอ๊ยยย หนูบอกแม่ให้วนรถกลับบ้านไปแล้ว เพจโรงเรียนเชื่อถืออะไรได้บ้างเนี่ย 😡' },
+                        { user: 'ต้นกล้า ม.6/4', badge: 'ลูกเพจ', text: 'ดูตราโรงเรียนก็รู้แล้วว่าภาพ AI แอดมินไม่กรองอะไรเลยหรอ อันฟอลแป๊บ!' }
+                    ],
+                    deleted: [
+                        { user: 'ฟ้า ม.5/1', badge: 'ลูกเพจ', text: 'แอดมินครับ เห็นในกลุ่มไลน์แชร์ภาพหยุดเรียนกันเต็มเลย จริงไหมครับ? ช่วยโพสต์บอกหน่อย' },
+                        { user: 'ระบบ AI-Guard', badge: 'ผู้ช่วย', text: 'การลบทิ้งช่วยป้องกันไม่ให้เพจแชร์ข่าวปลอม แต่หากตรวจสอบและโพสต์เตือนภัยจะช่วยเพื่อนๆ ได้มากกว่านะ!' }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                skillKey: 'audio',
+                skillName: 'การจับผิดเสียงสังเคราะห์ (Deepfake Audio Detection)',
+                timeLabel: 'เวลา 12:20 น. • ช่วงพักกลางวัน มีคลิปเสียงส่งต่อในกลุ่มไลน์',
+                senderName: 'ห้องแชตผู้ปกครอง & นักเรียน (Forward)',
+                senderRole: 'ส่งไฟล์เสียง MP3 ความยาว 0:12 วินาที',
+                chatIntro: 'แอดมินช่วยลงประกาศเสียงท่านรองฯ ให้หน่อย ในกลุ่มไลน์ผู้ปกครองส่งต่อกันรัวๆ เลย บอกให้รีบโอนค่าซ่อมแอร์คนละ 500 บาทก่อน 4 โมงเย็น!',
+                evidenceType: 'audio',
+                audioScript: 'ประกาศด่วนถึงนักเรียนทุกคนเนื่องจากเครื่องปรับอากาศอาคารเรียนชำรุดฉุกเฉินขอให้นักเรียนทุกคนโอนเงินสมทบค่าซ่อมคนละห้าร้อยบาทเข้าบัญชีพร้อมเพย์ส่วนบุคคลของเจ้าหน้าที่ภายในเวลาสิบหกนาฬิกาวันนี้ห้ามฝ่าฝืนโดยเด็ดขาด',
+                hintText: 'สแกนคลื่นเสียงพบ 3 พิรุธ: 1) กราฟเสียงไม่มีช่วงหยุดหายใจธรรมชาติ (0.0s Breath Pause) 2) โทนเสียงแบนราบเป็นโมโนโทน 3) เนื้อหาเร่งรัดให้โอนเงินเข้า "บัญชีพร้อมเพย์ส่วนบุคคล"',
+                quiz: {
+                    question: 'พฤติกรรมและลักษณะใดในคลิปเสียงนี้ที่บ่งชี้ว่าเป็นเสียงสังเคราะห์ Deepfake ของมิจฉาชีพ?',
+                    options: [
+                        'น้ำเสียงโมโนโทนไร้จังหวะการหายใจธรรมชาติ ร่วมกับการเร่งรัดให้โอนเงินเข้าบัญชีส่วนบุคคล',
+                        'คลิปเสียงมีความยาวเพียง 12 วินาที และบันทึกในรูปแบบไฟล์เสียงดิจิทัล',
+                        'ผู้พูดใช้คำว่า "นักเรียนทุกคน" ในการเริ่มต้นประโยคประกาศ',
+                        'ระดับความดังของเสียงชัดเจนไม่มีเสียงรบกวนจากภายนอก'
+                    ],
+                    correctIndex: 0
+                },
+                explanation: 'เทคโนโลยี AI Voice Cloning สามารถเลียนแบบน้ำเสียงผู้บริหารได้ใกล้เคียงความจริง แต่จุดสังเกตสำคัญคือ "จังหวะการเว้นวรรคหายใจที่หายไป" อารมณ์เสียงที่เรียบผิดธรรมชาติ และจุดประสงค์แอบแฝงที่มักหลอกให้ "โอนเงินด่วนเข้าบัญชีส่วนบุคคล" ซึ่งโรงเรียนไม่มีนโยบายเก็บเงินผ่านวิธีนี้!',
+                comments: {
+                    correct: [
+                        { user: 'รองฯ วิชัย (ฝ่ายบริหาร)', badge: 'ผู้บริหาร', text: 'ขอบใจแอดมินเพจมาก! เสียงนั้นเป็น AI ปลอมแปลงเสียงผม โรงเรียนไม่มีการเก็บเงินผ่านพร้อมเพย์ส่วนบุคคลเด็ดขาด' },
+                        { user: 'ปาล์ม ม.6/2', badge: 'แฟนตัวยง', text: 'เกือบโอนไปแล้ว 500! ฟังดีๆ คือพูดรวดเดียวไม่หายใจเลย น่ากลัวมากสมัยนี้' },
+                        { user: 'แม่น้องกาย', badge: 'ผู้ปกครอง', text: 'เพจโรงเรียนทำงานไวและแม่นยำมากค่ะ ช่วยเซฟเงินผู้ปกครองได้เยอะเลย' }
+                    ],
+                    wrongQuiz: [
+                        { user: 'รองฯ วิชัย (ฝ่ายบริหาร)', badge: 'ผู้บริหาร', text: 'ดีแล้วครับที่ไม่หลงเชื่อโพสต์ออกไป จุดสังเกตหลักคือเสียง AI จะพูดรวดเดียวไร้จังหวะหายใจและหลอกให้โอนเงินครับ' },
+                        { user: 'เจมส์ ม.5/4', badge: 'ลูกเพจ', text: 'เกือบไปแล้วทุกคน อย่าหลงโอนเงินให้มิจฉาชีพนะ!' }
+                    ],
+                    rushedPost: [
+                        { user: 'รองฯ วิชัย (ฝ่ายบริหาร)', badge: 'ผู้บริหาร', text: 'แอดมิน! นั่นมันเสียง Deepfake มิจฉาชีพ! ตอนนี้มีผู้ปกครองหลงโอนเงินไปแล้ว 3 ราย รีบลบโพสต์เดี๋ยวนี้!' },
+                        { user: 'กิ๊ฟ ม.6/5', badge: 'ลูกเพจ', text: 'เพจโรงเรียนกลายเป็นช่องทางให้มิจฉาชีพหลอกโอนเงินเฉยเลย ไม่ไหวๆ 👎' },
+                        { user: 'ภูมิ ม.4/1', badge: 'ลูกเพจ', text: 'เสียงหุ่นยนต์ชัดขนาดนั้น แอดมินไม่ฟังให้ดีก่อนหรอครับ!' }
+                    ],
+                    deleted: [
+                        { user: 'เนย ม.5/3', badge: 'ลูกเพจ', text: 'แอดมินคะ คลิปเสียงเก็บค่าแอร์ 500 ในไลน์กลุ่มคือเรื่องจริงไหมคะ เพื่อนกำลังจะโอนแล้ว!' },
+                        { user: 'ระบบ AI-Guard', badge: 'ผู้ช่วย', text: 'การลบทิ้งอย่างเดียวอาจไม่ทันการณ์ เพราะคลิปเสียงกำลังแพร่กระจายในกลุ่มไลน์ของนักเรียน!' }
+                    ]
+                }
+            },
+            {
+                id: 3,
+                skillKey: 'hallucination',
+                skillName: 'การจับผิดอาการ AI หลอน (AI Hallucination Fact-Checking)',
+                timeLabel: 'เวลา 18:00 น. • ช่วงเย็นก่อนวันสอบปลายภาค',
+                senderName: 'เด็กดี ชอบติว (ลูกเพจ)',
+                senderRole: 'ส่งบทความสรุปเนื้อหาเตรียมสอบ',
+                chatIntro: 'แอดมินครับ! ผมใช้ AI ช่วยสรุป "สูตรลัดวิทยาการคำนวณ + สถิติข้อสอบ 10 ปีย้อนหลัง" มาให้ ภาษาสวยน่าอ่านมาก ช่วยโพสต์แจกเพื่อนๆ อ่านคืนนี้หน่อยครับ!',
+                evidenceType: 'text',
+                hintText: 'สแกนพบอาการ AI หลอน (Hallucination) 3 จุด: 1) แต่งชื่อ "อัลกอริทึมควอนตัม-ฟลามิงโก" ขึ้นมาเอง 2) ผลรวมเปอร์เซ็นต์สถิติ 45% + 35% + 30% = 110% 3) อ้างอิงหนังสือ สสวท. ปี พ.ศ. 2575 (อนาคต!)',
+                quiz: {
+                    question: 'ความผิดปกติในบทความสรุปติวสอบนี้ เรียกว่าปรากฏการณ์ใดของปัญญาประดิษฐ์ และจับผิดได้จากจุดใด?',
+                    options: [
+                        'AI Hallucination (อาการ AI หลอน) จับผิดได้จากการแต่งชื่อทฤษฎีและปี พ.ศ. ปลอม รวมถึงตัวเลขสถิติรวมเกิน 100%',
+                        'Deepfake Synthesis จับผิดได้จากการใช้ภาษาไทยที่สละสลวยและจัดย่อหน้าเป็นระเบียบ',
+                        'Algorithmic Bias จับผิดได้จากการเน้นเนื้อหาวิชาวิทยาการคำนวณมากเกินไป',
+                        'Phishing Attack จับผิดได้จากการแจกสรุปสูตรลัดให้นักเรียนอ่านฟรีโดยไม่คิดเงิน'
+                    ],
+                    correctIndex: 0
+                },
+                explanation: 'AI Hallucination (อาการ AI หลอน) คือการที่ Generative AI สร้างข้อมูลเท็จขึ้นมาอย่างมั่นใจและใช้ภาษาที่ดูน่าเชื่อถือ เช่น แต่งชื่อทฤษฎี ชื่อผู้วิจัย ปี พ.ศ. อ้างอิงที่ไม่มีอยู่จริง หรือคำนวณตัวเลขผิดพลาด (45+35+30 = 110%) ผู้เรียนจึงต้องตรวจสอบแหล่งข้อมูลปฐมภูมิ (Fact-Check) เสมอ!',
+                comments: {
+                    correct: [
+                        { user: 'ครูเอก (ครูวิทยาการคำนวณ)', badge: 'ครูประจำวิชา', text: 'สุดยอดมากแอดมิน! เกือบมีคนท่อง "ควอนตัม-ฟลามิงโก" ไปเขียนตอบในห้องสอบพรุ่งนี้แล้ว 😂' },
+                        { user: 'พลอย ม.6/1', badge: 'แฟนตัวยง', text: '45+35+30 = 110% ฮ่าๆๆ AI มั่วเลขได้เนียนมาก ขอบคุณเพจที่ช่วยเช็กให้นะ!' },
+                        { user: 'เต้ ม.5/2', badge: 'ลูกเพจ', text: 'เพจคุณภาพของจริง! ให้ความรู้เรื่อง AI Hallucination ไปพร้อมกับติวสอบเลย' }
+                    ],
+                    wrongQuiz: [
+                        { user: 'ครูเอก (ครูวิทยาการคำนวณ)', badge: 'ครูประจำวิชา', text: 'ดีมากครับที่ชะลอโพสต์ไว้ตรวจสอบ จุดนี้เรียกว่า "AI Hallucination" ครับ สังเกตจากตัวเลข 110% และปี พ.ศ. 2575 ที่ไม่มีจริง' },
+                        { user: 'มายด์ ม.6/3', badge: 'ลูกเพจ', text: 'เกือบจำสูตรปลอมไปสอบแล้ว ขอบคุณที่ช่วยกรองครับ!' }
+                    ],
+                    rushedPost: [
+                        { user: 'ครูเอก (ครูวิทยาการคำนวณ)', badge: 'ครูประจำวิชา', text: 'แอดมิน! ในหนังสือ สสวท. ไม่มี "ควอนตัม-ฟลามิงโก" และปี พ.ศ. 2575 ยังมาไม่ถึงเลยครับ ลบด่วนเดี๋ยวนักเรียนจำผิดไปสอบ!' },
+                        { user: 'บีม ม.6/2', badge: 'ลูกเพจ', text: 'บวกเลขเปอร์เซ็นต์ได้ 110% เพจโรงเรียนก๊อปวางจาก AI โดยไม่อ่านเลยหรอครับเนี่ย 🤦‍♂️' },
+                        { user: 'ออม ม.5/1', badge: 'ลูกเพจ', text: 'ทัวร์ลงฉ่ำเลยรอบนี้ แอดมินควรเช็กข้อมูลก่อนโพสต์นะ!' }
+                    ],
+                    deleted: [
+                        { user: 'เด็กดี ชอบติว', badge: 'ลูกเพจ', text: 'อ้าว แอดมินลบข้อความผมทำไมครับ หรือว่าเนื้อหามันผิดตรงไหน ช่วยบอกหน่อยครับผมจะได้ไม่เอาไปอ่านสอบ' },
+                        { user: 'ระบบ AI-Guard', badge: 'ผู้ช่วย', text: 'การลบทิ้งเงียบๆ ทำให้เพื่อนคนส่งไม่รู้ว่าข้อมูลจาก AI มีจุดหลอน (Hallucination) และอาจนำไปอ่านสอบผิดๆ ได้!' }
+                    ]
+                }
+            }
+        ];
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 2: สถานะของเกม - GAME STATE]
+         * ============================================================================
+         */
+        let gameState = {
+            trustScore: 100,
+            currentMissionIndex: 0,
+            timerEnabled: true,
+            timeLeft: 60,
+            timerInterval: null,
+            soundEnabled: true,
+            hintUsedInCurrentMission: false,
+            totalHintsUsed: 0,
+            correctVerifications: 0,
+            skillResults: {
+                image: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false },
+                audio: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false },
+                hallucination: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false }
+            },
+            isAudioPlaying: false,
+            audioAnimFrame: null,
+            audioTimeout: null
+        };
+
+        const STORAGE_KEY_SCORE = 'viral_or_fake_highscore_v1';
+        const STORAGE_KEY_BADGE = 'viral_or_fake_bestbadge_v1';
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 3: ระบบเสียงสังเคราะห์ WEB AUDIO API & DEEPFAKE SPEECH]
+         * ทำงานแบบ Offline 100% ไม่ต้องพึ่งไฟล์เสียงภายนอก
+         * ============================================================================
+         */
+        let audioCtx = null;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) {
+                    audioCtx = new AudioContextClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, type, duration, startTimeOffset = 0, gainVal = 0.15) {
+            if (!gameState.soundEnabled) return;
+            try {
+                initAudioContext();
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime + startTimeOffset;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(gainVal, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } catch (e) {
+                // Ignore audio errors on restricted devices
+            }
+        }
+
+        function playClickSound() {
+            playTone(620, 'sine', 0.08, 0, 0.12);
+        }
+
+        function playNotificationSound() {
+            playTone(784, 'sine', 0.14, 0, 0.14);      // G5
+            playTone(1046.5, 'sine', 0.22, 0.11, 0.14); // C6
+        }
+
+        function playScannerSound() {
+            if (!gameState.soundEnabled) return;
+            try {
+                initAudioContext();
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+                osc.frequency.exponentialRampToValueAtTime(450, now + 0.7);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.75);
+            } catch (e) {}
+        }
+
+        function playCorrectSound() {
+            playTone(523.25, 'triangle', 0.18, 0, 0.16);    // C5
+            playTone(659.25, 'triangle', 0.18, 0.12, 0.16); // E5
+            playTone(783.99, 'triangle', 0.35, 0.24, 0.18); // G5
+        }
+
+        function playWrongSound() {
+            playTone(220, 'sawtooth', 0.25, 0, 0.16);
+            playTone(175, 'sawtooth', 0.4, 0.2, 0.18);
+        }
+
+        function playEndingSound(type) {
+            if (type === 'true') {
+                playTone(523.25, 'triangle', 0.15, 0, 0.16);
+                playTone(659.25, 'triangle', 0.15, 0.12, 0.16);
+                playTone(783.99, 'triangle', 0.15, 0.24, 0.16);
+                playTone(1046.5, 'triangle', 0.5, 0.36, 0.2);
+            } else if (type === 'normal') {
+                playTone(440, 'sine', 0.22, 0, 0.15);
+                playTone(554.37, 'sine', 0.35, 0.18, 0.15);
+            } else {
+                playTone(300, 'sawtooth', 0.25, 0, 0.15);
+                playTone(260, 'sawtooth', 0.25, 0.22, 0.15);
+                playTone(210, 'sawtooth', 0.5, 0.44, 0.16);
+            }
+        }
+
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            if (gameState.soundEnabled) playClickSound();
+            const icon = gameState.soundEnabled ? '🔊' : '🔇';
+            const label = gameState.soundEnabled ? 'เสียง: เปิด' : 'เสียง: ปิด';
+            document.getElementById('sound-icon-start').textContent = icon;
+            document.getElementById('sound-text-start').textContent = label;
+            document.getElementById('sound-icon-game').textContent = icon;
+            if (!gameState.soundEnabled && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 4: การจัดการหน้าจอและเริ่มต้นเกม - NAVIGATION & INIT]
+         * ============================================================================
+         */
+        function loadSavedStats() {
+            try {
+                const bestScore = localStorage.getItem(STORAGE_KEY_SCORE);
+                const bestBadge = localStorage.getItem(STORAGE_KEY_BADGE);
+                if (bestScore !== null) {
+                    document.getElementById('start-highscore').textContent = `${bestScore} คะแนน`;
+                }
+                if (bestBadge) {
+                    document.getElementById('start-best-badge').textContent = bestBadge;
+                }
+            } catch (e) {
+                // Ignore localStorage restrictions if any
+            }
+        }
+
+        function setTimerMode(enabled) {
+            playClickSound();
+            gameState.timerEnabled = enabled;
+            const timedBtn = document.getElementById('mode-timed-btn');
+            const untimedBtn = document.getElementById('mode-untimed-btn');
+            if (enabled) {
+                timedBtn.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border-2 border-sky-500 bg-sky-50 text-sky-800 transition cursor-pointer';
+                untimedBtn.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold border-2 border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition cursor-pointer';
+            } else {
+                untimedBtn.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-800 transition cursor-pointer';
+                timedBtn.className = 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold border-2 border-slate-200 bg-white text-slate-600 hover:bg-slate-100 transition cursor-pointer';
+            }
+        }
+
+        function toggleHowToModal(show) {
+            playClickSound();
+            const modal = document.getElementById('howto-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function startGame() {
+            initAudioContext();
+            playClickSound();
+            stopDeepfakeAudio();
+
+            // Reset State
+            gameState.trustScore = 100;
+            gameState.currentMissionIndex = 0;
+            gameState.totalHintsUsed = 0;
+            gameState.correctVerifications = 0;
+            gameState.skillResults = {
+                image: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false },
+                audio: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false },
+                hallucination: { status: 'pending', label: 'รอประเมิน', scoreDelta: 0, usedHint: false }
+            };
+
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('ending-screen').classList.add('hidden');
+            const gameplay = document.getElementById('gameplay-screen');
+            gameplay.classList.remove('hidden');
+            gameplay.classList.add('flex');
+
+            updateTrustScoreUI(0, false);
+            loadMission(0);
+        }
+
+        function resetAndPlayAgain() {
+            stopConfetti();
+            startGame();
+        }
+
+        function backToHome() {
+            playClickSound();
+            stopConfetti();
+            stopDeepfakeAudio();
+            clearInterval(gameState.timerInterval);
+            document.getElementById('gameplay-screen').classList.add('hidden');
+            document.getElementById('gameplay-screen').classList.remove('flex');
+            document.getElementById('ending-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            loadSavedStats();
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 5: ระบบแสดงผลด่านและหลักฐานทั้ง 3 รูปแบบ - MISSION RENDERER]
+         * ============================================================================
+         */
+        function loadMission(index) {
+            const mission = MISSIONS_DATA[index];
+            gameState.hintUsedInCurrentMission = false;
+            stopDeepfakeAudio();
+            playNotificationSound();
+
+            // Update Header Status
+            document.getElementById('mission-indicator').textContent = `${index + 1} / ${MISSIONS_DATA.length}`;
+            document.getElementById('mission-time-context').textContent = mission.timeLabel;
+
+            // Reset Hint Button
+            const hintBtn = document.getElementById('btn-ai-hint');
+            hintBtn.disabled = false;
+            hintBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            hintBtn.innerHTML = `<span>🔍 แว่นขยายสแกน AI</span><span class="bg-slate-900/15 px-1.5 py-0.5 rounded text-[11px]">-5</span>`;
+
+            // Enable Decision Buttons
+            setDecisionButtonsEnabled(true);
+
+            // Render Chat Body
+            const chatBody = document.getElementById('chat-body');
+            chatBody.innerHTML = `
+                <!-- Incoming Message Bubble -->
+                <div class="flex items-start gap-2.5 animate-pop">
+                    <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-700 font-bold flex items-center justify-center shrink-0 text-sm">
+                        👤
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-xs font-extrabold text-slate-800">${mission.senderName}</span>
+                            <span class="text-[11px] text-slate-400">${mission.senderRole}</span>
+                        </div>
+                        <div class="bg-white rounded-2xl rounded-tl-none p-3.5 shadow-sm border border-slate-200 text-sm text-slate-800 leading-relaxed">
+                            ${mission.chatIntro}
+                        </div>
+
+                        <!-- Evidence Attachment Card -->
+                        <div id="evidence-card" class="relative rounded-2xl bg-white border-2 border-sky-200 p-3 sm:p-4 shadow-md overflow-hidden">
+                            <div id="scanner-laser-effect" class="scanner-laser hidden"></div>
+                            ${renderEvidenceHTML(mission)}
+                        </div>
+
+                        <!-- AI Scanner Hint Reveal Box (Hidden until hint button clicked) -->
+                        <div id="ai-hint-box" class="hidden rounded-2xl bg-amber-50 border-2 border-amber-300 p-3.5 text-xs sm:text-sm text-amber-950 shadow-sm animate-pop">
+                            <div class="font-extrabold text-amber-800 flex items-center gap-1.5 mb-1">
+                                <span>🤖 ผลการสแกนจากผู้ช่วย AI-Guard:</span>
+                            </div>
+                            <p>${mission.hintText}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            chatBody.scrollTop = 0;
+
+            // Initialize Canvas Visualizer if Stage 2 (Audio)
+            if (mission.evidenceType === 'audio') {
+                setTimeout(() => drawAudioVisualizer(false), 60);
+            }
+
+            // Start Stage Timer
+            startMissionTimer();
+        }
+
+        function renderEvidenceHTML(mission) {
+            // ------------------------------------------------------------------------
+            // ด่านที่ 1: ภาพประกาศหยุดเรียนปลอม (สร้างด้วย SVG จำลองจุดบกพร่องของ AI)
+            // ------------------------------------------------------------------------
+            if (mission.evidenceType === 'image') {
+                return `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-extrabold text-sky-700 flex items-center gap-1">
+                            <span>🖼️ ไฟล์แนบ: ประกาศโรงเรียน_ด่วนที่สุด.jpg</span>
+                        </span>
+                        <span class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-500 font-semibold">สังเกตตราโลโก้ ลายเซ็น และแสงเงา</span>
+                    </div>
+                    <!-- Simulated Wooden Desk Background + Skewed Paper with AI Artifacts -->
+                    <div class="relative rounded-xl bg-amber-900/15 p-3 sm:p-4 flex justify-center items-center overflow-hidden border border-slate-200">
+                        <svg viewBox="0 0 460 320" class="w-full max-w-[440px] h-auto rounded-lg" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Contradictory Floating Detached Shadow (AI Lighting Artifact) -->
+                            <polygon points="35,12 415,8 428,292 48,302" fill="#0F172A" opacity="0.24"/>
+                            
+                            <!-- Official Paper Sheet -->
+                            <rect x="46" y="18" width="376" height="286" rx="4" fill="#FFFDF9" stroke="#CBD5E1" stroke-width="1.5"/>
+                            
+                            <!-- Distorted AI School Crest / Emblem -->
+                            <g transform="translate(234, 52)">
+                                <circle cx="0" cy="0" r="22" fill="#FEF3C7" stroke="#D97706" stroke-width="2" stroke-dasharray="6 2 3 1"/>
+                                <!-- Asymmetric Melted AI Wings -->
+                                <path d="M-24 -6 Q-36 -18 -18 -20 Q-12 -10 -16 4 Z" fill="#F59E0B"/>
+                                <path d="M22 -2 Q34 8 18 14 Q14 4 18 -8 Z" fill="#F59E0B"/>
+                                <!-- Garbled AI Gibberish Text inside Emblem -->
+                                <text x="0" y="3" text-anchor="middle" font-size="8" font-weight="bold" fill="#92400E">ว.พ.๙฿#@</text>
+                                <text x="0" y="13" text-anchor="middle" font-size="6" fill="#B45309">ร.ร.วิทฯกาสส</text>
+                            </g>
+
+                            <!-- Header Text -->
+                            <text x="234" y="92" text-anchor="middle" font-size="14" font-weight="bold" fill="#0F172A">ประกาศโรงเรียนวิทยาการพิทยาคม</text>
+                            <text x="234" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="#DC2626">เรื่อง หยุดเรียนเป็นกรณีพิเศษ 1 วัน (ด่วนที่สุด)</text>
+                            <line x1="74" y1="120" x2="394" y2="120" stroke="#94A3B8" stroke-width="1"/>
+
+                            <!-- Body Text -->
+                            <text x="76" y="140" font-size="10.5" fill="#1E293B">เนื่องจากเกิดเหตุท่อประปาหลักภายในโรงเรียนแตกชำรุดอย่างรุนแรง</text>
+                            <text x="76" y="157" font-size="10.5" fill="#1E293B">ส่งผลให้ไม่สามารถให้บริการน้ำอุปโภคบริโภคแก่นักเรียนได้</text>
+                            <text x="76" y="174" font-size="10.5" fill="#1E293B">จึงขอประกาศ <tspan font-weight="bold" fill="#DC2626">ปิดการเรียนการสอนในวันนี้เป็นเวลา 1 วัน</tspan></text>
+                            <text x="76" y="191" font-size="10.5" fill="#1E293B">ให้นักเรียนทุกคนเดินทางกลับบ้านทันที และติดตามข่าวสารผ่านเพจ</text>
+
+                            <!-- Official Stamp & Melted Signature Artifact -->
+                            <g transform="translate(275, 222)">
+                                <!-- Dotted Signature Line -->
+                                <line x1="-25" y1="22" x2="105" y2="22" stroke="#475569" stroke-width="1" stroke-dasharray="2 2"/>
+                                <!-- AI Melted Signature fusing into the line -->
+                                <path d="M-10 18 C5 2, 15 32, 30 14 C42 28, 55 18, 88 22 C70 25, 20 23, -18 22" stroke="#1D4ED8" stroke-width="2.2" fill="none"/>
+                                <circle cx="94" cy="16" r="2" fill="#1D4ED8"/>
+                                <text x="40" y="38" text-anchor="middle" font-size="10" fill="#0F172A">(นายสมชาย รักเรียน)</text>
+                                <text x="40" y="51" text-anchor="middle" font-size="9.5" fill="#475569">ผู้อำนวยการโรงเรียน</text>
+                            </g>
+
+                            <!-- Forensic Highlight Markers (Shown only when AI Hint is activated) -->
+                            <g id="img-forensic-markers" class="hidden">
+                                <!-- Marker 1: Distorted Crest -->
+                                <circle cx="234" cy="52" r="28" fill="none" stroke="#EF4444" stroke-width="3" stroke-dasharray="5 3"/>
+                                <rect x="266" y="32" width="142" height="22" rx="6" fill="#EF4444"/>
+                                <text x="337" y="46" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#FFFFFF">1. ตราโลโก้และอักษรบิดเบี้ยว</text>
+
+                                <!-- Marker 2: Melted Signature -->
+                                <rect x="245" y="224" width="145" height="32" rx="8" fill="none" stroke="#EF4444" stroke-width="3" stroke-dasharray="5 3"/>
+                                <rect x="72" y="228" width="166" height="22" rx="6" fill="#EF4444"/>
+                                <text x="155" y="242" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#FFFFFF">2. ลายเซ็นกลืนหายไปกับเส้น</text>
+
+                                <!-- Marker 3: Detached Shadow -->
+                                <path d="M35 12 L48 302" stroke="#F59E0B" stroke-width="4"/>
+                                <rect x="54" y="268" width="155" height="22" rx="6" fill="#D97706"/>
+                                <text x="131" y="282" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#FFFFFF">3. เงากระดาษลอยผิดทิศทาง</text>
+                            </g>
+                        </svg>
+                    </div>
+                `;
+            }
+
+            // ------------------------------------------------------------------------
+            // ด่านที่ 2: คลิปเสียงผู้บริหาร Deepfake (Audio Visualizer + Speech Synthesis)
+            // ------------------------------------------------------------------------
+            if (mission.evidenceType === 'audio') {
+                return `
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="text-xs font-extrabold text-sky-700 flex items-center gap-1">
+                            <span>🎙️ ไฟล์เสียง: URGENT_รองผอ_แจ้งโอนเงินด่วน.mp3</span>
+                        </span>
+                        <span class="text-[11px] px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">0:12 วินาที</span>
+                    </div>
+
+                    <!-- Audio Player Box -->
+                    <div class="rounded-2xl bg-slate-900 text-white p-3.5 sm:p-4 space-y-3 shadow-inner">
+                        <div class="flex items-center gap-3">
+                            <button id="btn-play-deepfake" onclick="toggleDeepfakeAudio()" class="w-12 h-12 rounded-full bg-sky-500 hover:bg-sky-400 text-white flex items-center justify-center text-xl shadow-lg shrink-0 transition transform active:scale-95 cursor-pointer">
+                                ▶️
+                            </button>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs text-sky-300 font-bold mb-1 flex justify-between">
+                                    <span>คลื่นความถี่เสียง (Waveform Analyzer)</span>
+                                    <span id="audio-status-label" class="text-emerald-400">กดปุ่มเล่นเพื่อฟังเสียง</span>
+                                </div>
+                                <canvas id="audio-visualizer" class="w-full h-12 rounded-lg bg-slate-800/90 block"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Auto Transcript Box -->
+                        <div class="bg-slate-800/90 rounded-xl p-3 border border-slate-700">
+                            <div class="text-[11px] font-bold text-slate-400 mb-1 flex items-center justify-between">
+                                <span>📝 ข้อความถอดเสียงอัตโนมัติ (Auto-Transcript):</span>
+                                <span id="audio-breath-tag" class="hidden text-amber-400 font-extrabold">⚠️ 0.0s ช่วงหยุดหายใจ (พูดรวดเดียว!)</span>
+                            </div>
+                            <p id="audio-transcript-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                                "${mission.audioScript}"
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // ------------------------------------------------------------------------
+            // ด่านที่ 3: บทความสรุปติวสอบ AI Hallucination (หลอนข้อมูลและสถิติ)
+            // ------------------------------------------------------------------------
+            return `
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-extrabold text-sky-700 flex items-center gap-1">
+                        <span>📄 บทความ: สรุปสูตรลัดวิทยาการคำนวณ_AI_Final.doc</span>
+                    </span>
+                    <span class="text-[11px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">อ่านตรวจสอบรายละเอียด</span>
+                </div>
+
+                <div class="rounded-xl bg-slate-50 border border-slate-200 p-3.5 sm:p-4 space-y-3 text-xs sm:text-sm text-slate-800 leading-relaxed">
+                    <div class="font-extrabold text-base text-sky-900 border-b border-slate-200 pb-2">
+                        📚 คู่มือพิชิตเกรด 4: สูตรลัดและสถิติข้อสอบย้อนหลัง 10 ปี
+                    </div>
+
+                    <div>
+                        <strong class="text-slate-900">1. สูตรลัดการจัดเรียงข้อมูลความเร็วสูง:</strong>
+                        <p class="mt-0.5">
+                            ในข้อสอบมักออกเรื่องการเรียงลำดับข้อมูล แนะนำให้ใช้วิธี 
+                            <span id="hallucination-mark-1" class="font-bold text-sky-800 transition-all">
+                                "อัลกอริทึมควอนตัม-ฟลามิงโก (Quantum-Flamingo Sort)" คิดค้นโดย ศ.ดร.สมศักดิ์ ไทยประดิษฐ์ ในปี พ.ศ. 2568
+                            </span> 
+                            ซึ่งสามารถเรียงลำดับข้อมูล 1,000,000 ตัวได้ภายใน 0.001 วินาทีโดยไม่ต้องเปรียบเทียบค่า
+                        </p>
+                    </div>
+
+                    <div>
+                        <strong class="text-slate-900">2. สถิติสัดส่วนเนื้อหาที่ออกสอบย้อนหลัง 10 ปี:</strong>
+                        <ul id="hallucination-mark-2" class="list-disc pl-5 mt-1 space-y-0.5 transition-all">
+                            <li>บทที่ 1 แนวคิดเชิงคำนวณ (Computational Thinking): <strong>45%</strong></li>
+                            <li>บทที่ 2 การเขียนโปรแกรมภาษา Python พื้นฐาน: <strong>35%</strong></li>
+                            <li>บทที่ 3 การรู้เท่าทันดิจิทัลและปัญญาประดิษฐ์: <strong>30%</strong></li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-1 border-t border-slate-200 text-xs text-slate-600">
+                        <strong>แหล่งอ้างอิงวิชาการ:</strong> 
+                        <span id="hallucination-mark-3" class="transition-all">
+                            หนังสือเรียนรายวิชาพื้นฐานวิทยาศาสตร์ เทคโนโลยี (วิทยาการคำนวณ) สสวท. ฉบับปรับปรุง พ.ศ. 2575 หน้า 412
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 6: ระบบเล่นเสียง DEEPFAKE & AUDIO VISUALIZER (ด่านที่ 2)]
+         * ============================================================================
+         */
+        function toggleDeepfakeAudio() {
+            if (gameState.isAudioPlaying) {
+                stopDeepfakeAudio();
+                return;
+            }
+
+            initAudioContext();
+            gameState.isAudioPlaying = true;
+            const btn = document.getElementById('btn-play-deepfake');
+            const statusLabel = document.getElementById('audio-status-label');
+            if (btn) btn.textContent = '⏹️';
+            if (statusLabel) {
+                statusLabel.textContent = 'กำลังเล่นเสียง (โมโนโทน ไร้จังหวะหายใจ)...';
+                statusLabel.className = 'text-amber-400 font-bold';
+            }
+
+            // 1. Web Speech API (Thai Robotic Monotone Voice)
+            const mission = MISSIONS_DATA[gameState.currentMissionIndex];
+            if ('speechSynthesis' in window && gameState.soundEnabled) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(mission.audioScript);
+                utterance.lang = 'th-TH';
+                utterance.pitch = 0.72; // ทุ้มต่ำแบบเสียงสังเคราะห์
+                utterance.rate = 1.08;  // พูดรัวต่อเนื่องไม่มีจังหวะหายใจ
+                utterance.onend = () => {
+                    stopDeepfakeAudio();
+                };
+                utterance.onerror = () => {
+                    // Fallback timer handles completion if TTS voice isn't available offline
+                };
+                window.speechSynthesis.speak(utterance);
+            }
+
+            // 2. Subtle Robotic Carrier Hum via Web Audio API (ทำงานได้แม้ไม่มี TTS ภาษาไทย)
+            playTone(145, 'sawtooth', 1.2, 0, 0.04);
+
+            // 3. Animate Waveform Visualizer
+            animateAudioVisualizer();
+
+            // Safety auto-stop after 12 seconds
+            gameState.audioTimeout = setTimeout(() => {
+                stopDeepfakeAudio();
+            }, 12000);
+        }
+
+        function stopDeepfakeAudio() {
+            gameState.isAudioPlaying = false;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            if (gameState.audioAnimFrame) {
+                cancelAnimationFrame(gameState.audioAnimFrame);
+                gameState.audioAnimFrame = null;
+            }
+            if (gameState.audioTimeout) {
+                clearTimeout(gameState.audioTimeout);
+                gameState.audioTimeout = null;
+            }
+            const btn = document.getElementById('btn-play-deepfake');
+            const statusLabel = document.getElementById('audio-status-label');
+            if (btn) btn.textContent = '▶️';
+            if (statusLabel) {
+                statusLabel.textContent = 'กดปุ่มเล่นเพื่อฟังอีกครั้ง';
+                statusLabel.className = 'text-emerald-400';
+            }
+            drawAudioVisualizer(false);
+        }
+
+        function animateAudioVisualizer() {
+            if (!gameState.isAudioPlaying) return;
+            drawAudioVisualizer(true);
+            gameState.audioAnimFrame = requestAnimationFrame(animateAudioVisualizer);
+        }
+
+        function drawAudioVisualizer(isPlaying) {
+            const canvas = document.getElementById('audio-visualizer');
+            if (!canvas) return;
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0) return;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            const barCount = 36;
+            const gap = 3;
+            const barWidth = (rect.width - (barCount - 1) * gap) / barCount;
+            const time = Date.now() / 120;
+
+            for (let i = 0; i < barCount; i++) {
+                // Monotone flat-top wave pattern (characteristic of synthetic TTS without breathing pauses)
+                let heightRatio = 0.18;
+                if (isPlaying) {
+                    const wave = Math.abs(Math.sin(time + i * 0.45));
+                    heightRatio = 0.45 + wave * 0.42; // Never drops to 0 (no breathing gap!)
+                } else {
+                    heightRatio = 0.15 + (i % 3) * 0.08;
+                }
+
+                const barHeight = Math.max(4, rect.height * heightRatio);
+                const x = i * (barWidth + gap);
+                const y = (rect.height - barHeight) / 2;
+
+                ctx.fillStyle = isPlaying
+                    ? (gameState.hintUsedInCurrentMission ? '#F59E0B' : '#38BDF8')
+                    : '#475569';
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(x, y, barWidth, barHeight, 3) : ctx.rect(x, y, barWidth, barHeight);
+                ctx.fill();
+            }
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 7: ตัวช่วยแว่นขยายสแกน AI (-5 คะแนน) & ตัวจับเวลา]
+         * ============================================================================
+         */
+        function useAiScannerHint() {
+            if (gameState.hintUsedInCurrentMission) return;
+            playScannerSound();
+
+            gameState.hintUsedInCurrentMission = true;
+            gameState.totalHintsUsed += 1;
+
+            const mission = MISSIONS_DATA[gameState.currentMissionIndex];
+            gameState.skillResults[mission.skillKey].usedHint = true;
+
+            // Deduct 5 Trust Score
+            updateTrustScoreUI(-5, true);
+
+            // Disable Hint Button
+            const hintBtn = document.getElementById('btn-ai-hint');
+            hintBtn.disabled = true;
+            hintBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            hintBtn.innerHTML = `<span>✅ สแกน AI เรียบร้อย</span>`;
+
+            // Trigger Laser Sweep Effect
+            const laser = document.getElementById('scanner-laser-effect');
+            if (laser) {
+                laser.classList.remove('hidden');
+                setTimeout(() => laser.classList.add('hidden'), 2400);
+            }
+
+            // Show Hint Text Box
+            const hintBox = document.getElementById('ai-hint-box');
+            if (hintBox) hintBox.classList.remove('hidden');
+
+            // Highlight Specific Artifacts in Each Stage
+            if (mission.evidenceType === 'image') {
+                const markers = document.getElementById('img-forensic-markers');
+                if (markers) markers.classList.remove('hidden');
+            } else if (mission.evidenceType === 'audio') {
+                const breathTag = document.getElementById('audio-breath-tag');
+                const transcript = document.getElementById('audio-transcript-text');
+                if (breathTag) breathTag.classList.remove('hidden');
+                if (transcript) {
+                    transcript.innerHTML = `"ประกาศด่วนถึงนักเรียนทุกคนเนื่องจากเครื่องปรับอากาศอาคารเรียนชำรุดฉุกเฉิน<span class="bg-amber-400/30 text-amber-200 px-1 rounded underline">ขอให้นักเรียนทุกคนโอนเงินสมทบค่าซ่อมคนละห้าร้อยบาทเข้าบัญชีพร้อมเพย์ส่วนบุคคลของเจ้าหน้าที่ภายในเวลาสิบหกนาฬิกาวันนี้ห้ามฝ่าฝืนโดยเด็ดขาด</span>"`;
+                }
+                drawAudioVisualizer(gameState.isAudioPlaying);
+            } else if (mission.evidenceType === 'text') {
+                const m1 = document.getElementById('hallucination-mark-1');
+                const m2 = document.getElementById('hallucination-mark-2');
+                const m3 = document.getElementById('hallucination-mark-3');
+                if (m1) m1.className = 'bg-red-100 text-red-800 font-bold px-1.5 py-0.5 rounded border border-red-300';
+                if (m2) m2.className = 'list-disc pl-5 mt-1 space-y-0.5 bg-amber-100/80 p-2 rounded-lg border border-amber-300 text-amber-950 font-semibold';
+                if (m3) m3.className = 'bg-red-100 text-red-800 font-bold px-1.5 py-0.5 rounded border border-red-300';
+            }
+        }
+
+        function startMissionTimer() {
+            clearInterval(gameState.timerInterval);
+            const timerDisplay = document.getElementById('timer-display');
+            const timerBadge = document.getElementById('timer-badge');
+
+            if (!gameState.timerEnabled) {
+                timerDisplay.textContent = '∞ ไม่จำกัด';
+                timerBadge.className = 'px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 font-extrabold text-xs sm:text-sm border border-emerald-200 text-center min-w-[82px]';
+                return;
+            }
+
+            gameState.timeLeft = 60;
+            timerDisplay.textContent = '60s';
+            timerBadge.className = 'px-3 py-2 rounded-xl bg-amber-50 text-amber-800 font-extrabold text-xs sm:text-sm border border-amber-200 text-center min-w-[74px]';
+
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeLeft -= 1;
+                timerDisplay.textContent = `${gameState.timeLeft}s`;
+
+                if (gameState.timeLeft <= 15) {
+                    timerBadge.className = 'px-3 py-2 rounded-xl bg-red-100 text-red-700 font-extrabold text-xs sm:text-sm border border-red-300 text-center min-w-[74px] animate-pulse';
+                }
+
+                if (gameState.timeLeft <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 8: การตัดสินใจของผู้เล่น QUIZ และ FEEDBACK]
+         * ============================================================================
+         */
+        function setDecisionButtonsEnabled(enabled) {
+            ['btn-action-post', 'btn-action-verify', 'btn-action-delete'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.disabled = !enabled;
+                    if (enabled) btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    else btn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        }
+
+        function handleDecision(actionType) {
+            playClickSound();
+            const mission = MISSIONS_DATA[gameState.currentMissionIndex];
+
+            if (actionType === 'verify') {
+                // Open Fact-Checking Quiz Modal
+                openQuizModal(mission);
+                return;
+            }
+
+            // Stop timer and audio for immediate actions ('post' or 'delete')
+            clearInterval(gameState.timerInterval);
+            stopDeepfakeAudio();
+            setDecisionButtonsEnabled(false);
+
+            if (actionType === 'post') {
+                // Rushed to post fake news (-40)
+                playWrongSound();
+                document.getElementById('gameplay-screen').classList.add('animate-shake');
+                setTimeout(() => document.getElementById('gameplay-screen').classList.remove('animate-shake'), 500);
+
+                updateTrustScoreUI(-40, true);
+                gameState.skillResults[mission.skillKey].status = 'failed';
+                gameState.skillResults[mission.skillKey].label = 'รีบโพสต์ข่าวปลอม (-40)';
+                gameState.skillResults[mission.skillKey].scoreDelta = -40;
+
+                showFeedbackModal({
+                    type: 'rushedPost',
+                    icon: '🚨',
+                    title: 'พลาดท่า! เพจโดนทัวร์ลงหนักมาก!',
+                    subtitle: 'คุณรีบโพสต์ข่าวปลอมโดยไม่ตรวจสอบข้อเท็จจริงก่อน',
+                    delta: -40,
+                    explanation: mission.explanation,
+                    comments: mission.comments.rushedPost
+                });
+            } else if (actionType === 'delete') {
+                // Deleted silently (+5)
+                playNotificationSound();
+                updateTrustScoreUI(5, true);
+                gameState.skillResults[mission.skillKey].status = 'partial';
+                gameState.skillResults[mission.skillKey].label = 'ลบทิ้งเงียบๆ (+5)';
+                gameState.skillResults[mission.skillKey].scoreDelta = 5;
+
+                showFeedbackModal({
+                    type: 'deleted',
+                    icon: '🛡️',
+                    title: 'ปลอดภัยไว้ก่อน แต่เสียโอกาสเตือนภัย',
+                    subtitle: 'คุณลบข้อความทิ้งไม่ให้เพจแชร์ข่าวปลอม แต่ลูกเพจยังสับสนอยู่',
+                    delta: 5,
+                    explanation: mission.explanation,
+                    comments: mission.comments.deleted
+                });
+            }
+        }
+
+        function handleTimeout() {
+            playWrongSound();
+            stopDeepfakeAudio();
+            closeQuizModal();
+            setDecisionButtonsEnabled(false);
+
+            const mission = MISSIONS_DATA[gameState.currentMissionIndex];
+            updateTrustScoreUI(-25, true);
+            gameState.skillResults[mission.skillKey].status = 'failed';
+            gameState.skillResults[mission.skillKey].label = 'หมดเวลาตัดสินใจ (-25)';
+            gameState.skillResults[mission.skillKey].scoreDelta = -25;
+
+            showFeedbackModal({
+                type: 'rushedPost',
+                icon: '⏰',
+                title: 'หมดเวลา! ข่าวลือแพร่กระจายไปทั่วโรงเรียนแล้ว',
+                subtitle: 'ในโลกโซเชียล ความล่าช้าเกินไปทำให้ลูกเพจหันไปเชื่อข่าวลือจากแหล่งอื่น',
+                delta: -25,
+                explanation: mission.explanation,
+                comments: mission.comments.deleted
+            });
+        }
+
+        function openQuizModal(mission) {
+            const modal = document.getElementById('quiz-modal');
+            document.getElementById('quiz-question-title').textContent = mission.quiz.question;
+            const container = document.getElementById('quiz-options-container');
+            const letters = ['ก', 'ข', 'ค', 'ง'];
+
+            container.innerHTML = mission.quiz.options.map((opt, idx) => `
+                <button onclick="submitQuizAnswer(${idx})" class="w-full text-left p-3.5 rounded-2xl border-2 border-slate-200 hover:border-sky-500 hover:bg-sky-50 transition flex items-start gap-3 group cursor-pointer">
+                    <span class="w-7 h-7 rounded-xl bg-sky-100 group-hover:bg-sky-600 group-hover:text-white text-sky-800 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5 transition">
+                        ${letters[idx]}
+                    </span>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">${opt}</span>
+                </button>
+            `).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeQuizModal() {
+            playClickSound();
+            document.getElementById('quiz-modal').classList.add('hidden');
+        }
+
+        function submitQuizAnswer(selectedIndex) {
+            clearInterval(gameState.timerInterval);
+            stopDeepfakeAudio();
+            document.getElementById('quiz-modal').classList.add('hidden');
+            setDecisionButtonsEnabled(false);
+
+            const mission = MISSIONS_DATA[gameState.currentMissionIndex];
+            const isCorrect = selectedIndex === mission.quiz.correctIndex;
+
+            if (isCorrect) {
+                playCorrectSound();
+                gameState.correctVerifications += 1;
+                updateTrustScoreUI(25, true);
+                gameState.skillResults[mission.skillKey].status = 'mastered';
+                gameState.skillResults[mission.skillKey].label = 'วิเคราะห์แม่นยำ (+25)';
+                gameState.skillResults[mission.skillKey].scoreDelta = 25;
+
+                showFeedbackModal({
+                    type: 'correct',
+                    icon: '🎉',
+                    title: 'สุดยอด! จับผิดสื่อ AI ได้อย่างแม่นยำ!',
+                    subtitle: 'คุณตรวจสอบข้อมูลและโพสต์เตือนภัยลูกเพจได้ทันเวลา',
+                    delta: 25,
+                    explanation: mission.explanation,
+                    comments: mission.comments.correct
+                });
+            } else {
+                playNotificationSound();
+                updateTrustScoreUI(10, true);
+                gameState.skillResults[mission.skillKey].status = 'partial';
+                gameState.skillResults[mission.skillKey].label = 'ยับยั้งใจได้ แต่ระบุจุดพลาด (+10)';
+                gameState.skillResults[mission.skillKey].scoreDelta = 10;
+
+                showFeedbackModal({
+                    type: 'wrongQuiz',
+                    icon: '🧐',
+                    title: 'เกือบสมบูรณ์! ยับยั้งใจไม่โพสต์ได้ถูกต้อง',
+                    subtitle: 'แม้จะตอบจุดสังเกตพลาดไป แต่การเลือกตรวจสอบก่อนช่วยปกป้องเพจไว้ได้!',
+                    delta: 10,
+                    explanation: mission.explanation,
+                    comments: mission.comments.wrongQuiz
+                });
+            }
+        }
+
+        function showFeedbackModal({ type, icon, title, subtitle, delta, explanation, comments }) {
+            const banner = document.getElementById('fb-status-banner');
+            const deltaEl = document.getElementById('fb-score-delta');
+
+            if (type === 'correct') {
+                banner.className = 'rounded-2xl p-4 flex items-center justify-between bg-emerald-100 text-emerald-950 border border-emerald-300';
+                deltaEl.className = 'text-xl sm:text-2xl font-extrabold px-3 py-1 rounded-xl bg-white text-emerald-600 shadow-sm';
+            } else if (type === 'rushedPost') {
+                banner.className = 'rounded-2xl p-4 flex items-center justify-between bg-red-100 text-red-950 border border-red-300';
+                deltaEl.className = 'text-xl sm:text-2xl font-extrabold px-3 py-1 rounded-xl bg-white text-red-600 shadow-sm';
+            } else {
+                banner.className = 'rounded-2xl p-4 flex items-center justify-between bg-sky-100 text-sky-950 border border-sky-300';
+                deltaEl.className = 'text-xl sm:text-2xl font-extrabold px-3 py-1 rounded-xl bg-white text-sky-700 shadow-sm';
+            }
+
+            document.getElementById('fb-status-icon').textContent = icon;
+            document.getElementById('fb-status-title').textContent = title;
+            document.getElementById('fb-status-subtitle').textContent = subtitle;
+            deltaEl.textContent = delta >= 0 ? `+${delta}` : `${delta}`;
+            document.getElementById('fb-explanation').textContent = explanation;
+
+            // Render Simulated Follower Comments
+            const commentsContainer = document.getElementById('fb-comments-list');
+            commentsContainer.innerHTML = comments.map(c => `
+                <div class="bg-white rounded-xl p-2.5 border border-slate-200/80 shadow-xs text-xs">
+                    <div class="flex items-center gap-1.5 mb-0.5">
+                        <span class="font-extrabold text-slate-800">${c.user}</span>
+                        <span class="px-1.5 py-0.2 rounded bg-sky-100 text-sky-700 text-[10px] font-bold">${c.badge}</span>
+                    </div>
+                    <p class="text-slate-600 leading-snug">${c.text}</p>
+                </div>
+            `).join('');
+
+            // Update Next Button Text
+            const nextBtn = document.getElementById('btn-next-mission');
+            if (gameState.currentMissionIndex < MISSIONS_DATA.length - 1) {
+                nextBtn.textContent = `➡️ ไปยังภารกิจที่ ${gameState.currentMissionIndex + 2} / ${MISSIONS_DATA.length}`;
+            } else {
+                nextBtn.textContent = '🏁 ดูสรุปผลฉากจบ & Learning Dashboard';
+            }
+
+            document.getElementById('feedback-modal').classList.remove('hidden');
+        }
+
+        function proceedToNextMission() {
+            playClickSound();
+            document.getElementById('feedback-modal').classList.add('hidden');
+
+            if (gameState.currentMissionIndex < MISSIONS_DATA.length - 1) {
+                gameState.currentMissionIndex += 1;
+                loadMission(gameState.currentMissionIndex);
+            } else {
+                showEndingAndDashboard();
+            }
+        }
+
+        function updateTrustScoreUI(delta, showPopup) {
+            gameState.trustScore = Math.max(0, gameState.trustScore + delta);
+            const scoreText = document.getElementById('trust-score-text');
+            const scoreBar = document.getElementById('trust-score-bar');
+
+            scoreText.textContent = `${gameState.trustScore} คะแนน`;
+            const pct = Math.min(100, Math.round((gameState.trustScore / 175) * 100));
+            scoreBar.style.width = `${pct}%`;
+
+            if (gameState.trustScore >= 140) {
+                scoreBar.className = 'h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500';
+                scoreText.className = 'text-sm sm:text-base font-extrabold text-emerald-700';
+            } else if (gameState.trustScore >= 80) {
+                scoreBar.className = 'h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-400 transition-all duration-500';
+                scoreText.className = 'text-sm sm:text-base font-extrabold text-sky-700';
+            } else {
+                scoreBar.className = 'h-full rounded-full bg-gradient-to-r from-red-600 to-amber-500 transition-all duration-500';
+                scoreText.className = 'text-sm sm:text-base font-extrabold text-red-600';
+            }
+
+            if (showPopup && delta !== 0) {
+                const popup = document.createElement('div');
+                popup.className = `floating-score-popup ${delta > 0 ? 'text-emerald-500' : 'text-red-500'}`;
+                popup.style.left = '50%';
+                popup.style.top = '18%';
+                popup.textContent = delta > 0 ? `+${delta} Trust!` : `${delta} Trust!`;
+                document.body.appendChild(popup);
+                setTimeout(() => popup.remove(), 1200);
+            }
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 9: หน้าสรุปผล 3 ฉากจบ & LEARNING ANALYTICS DASHBOARD]
+         * ============================================================================
+         */
+        function showEndingAndDashboard() {
+            clearInterval(gameState.timerInterval);
+            stopDeepfakeAudio();
+
+            document.getElementById('gameplay-screen').classList.add('hidden');
+            document.getElementById('gameplay-screen').classList.remove('flex');
+            document.getElementById('ending-screen').classList.remove('hidden');
+
+            const score = gameState.trustScore;
+            const headerCard = document.getElementById('ending-header-card');
+            const tagEl = document.getElementById('ending-tag');
+            const titleEl = document.getElementById('ending-title');
+            const descEl = document.getElementById('ending-desc');
+            const badgeContainer = document.getElementById('ending-badge-svg');
+
+            let badgeTitleForStorage = '';
+
+            if (score >= 140) {
+                // TRUE ENDING
+                playEndingSound('true');
+                startConfetti();
+                badgeTitleForStorage = '🏆 เพจคุณภาพดีเด่นระดับประเทศ';
+                headerCard.className = 'rounded-3xl p-5 sm:p-6 text-center border-2 border-amber-300 bg-gradient-to-b from-amber-50 via-white to-emerald-50 relative overflow-hidden';
+                tagEl.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-amber-400 text-slate-950';
+                tagEl.textContent = '🏆 TRUE ENDING (140+ คะแนน)';
+                titleEl.textContent = 'รางวัล: เพจคุณภาพดีเด่นระดับประเทศ!';
+                descEl.textContent = 'สุดยอดแอดมินแห่งปี! คุณมีสติรู้เท่าทันสื่อ AI ทั้งภาพ เสียง และข้อความ ปกป้องนักเรียนและครูจากข่าวปลอมได้อย่างสมบูรณ์แบบ ยอดผู้ติดตามเพจพุ่งทะยานสูงสุด!';
+                badgeContainer.innerHTML = `
+                    <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-lg" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="42,75 30,115 50,104 60,115 60,75" fill="#0284C7"/>
+                        <polygon points="78,75 90,115 70,104 60,115 60,75" fill="#10B981"/>
+                        <circle cx="60" cy="48" r="38" fill="#F59E0B" stroke="#FEF3C7" stroke-width="4"/>
+                        <circle cx="60" cy="48" r="29" fill="#FBBF24" stroke="#B45309" stroke-width="1.5"/>
+                        <text x="60" y="45" text-anchor="middle" font-size="22">🏆</text>
+                        <text x="60" y="62" text-anchor="middle" font-size="8" font-weight="bold" fill="#78350F">VERIFIED AI-PRO</text>
+                    </svg>
+                `;
+            } else if (score >= 80) {
+                // NORMAL ENDING
+                playEndingSound('normal');
+                badgeTitleForStorage = '🛡️ แอดมินผู้รอดชีวิต';
+                headerCard.className = 'rounded-3xl p-5 sm:p-6 text-center border-2 border-sky-300 bg-gradient-to-b from-sky-50 to-white relative overflow-hidden';
+                tagEl.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-sky-500 text-white';
+                tagEl.textContent = '🛡️ NORMAL ENDING (80 - 135 คะแนน)';
+                titleEl.textContent = 'ฉากจบ: แอดมินผู้รอดชีวิต';
+                descEl.textContent = 'คุณพาเพจโรงเรียนรอดพ้นวิกฤตข่าวปลอมมาได้ แม้ยอดผู้ติดตามจะลดลงเล็กน้อยจากการอัปเดตที่ล่าช้าหรือยังจับผิดจุดสังเกตของ AI ได้ไม่ครบทุกจุด แต่ความรอบคอบของคุณช่วยรักษาเพจไว้ได้!';
+                badgeContainer.innerHTML = `
+                    <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M60 12 L102 28 L102 62 C102 88 60 108 60 108 C60 108 18 88 18 62 L18 28 Z" fill="#0EA5E9" stroke="#E0F2FE" stroke-width="4"/>
+                        <text x="60" y="62" text-anchor="middle" font-size="28">🛡️</text>
+                        <text x="60" y="82" text-anchor="middle" font-size="8" font-weight="bold" fill="#FFFFFF">SURVIVOR</text>
+                    </svg>
+                `;
+            } else {
+                // BAD ENDING
+                playEndingSound('bad');
+                badgeTitleForStorage = '🚨 เพจโดนทัวร์ลง';
+                headerCard.className = 'rounded-3xl p-5 sm:p-6 text-center border-2 border-red-300 bg-gradient-to-b from-red-50 to-white relative overflow-hidden';
+                tagEl.className = 'inline-block px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider mb-2 bg-red-600 text-white';
+                tagEl.textContent = '🚨 BAD ENDING (ต่ำกว่า 80 คะแนน)';
+                titleEl.textContent = 'เพจโดนทัวร์ลงและถูกสั่งปิดถาวร!';
+                descEl.textContent = 'ความเร่งรีบโดยขาดการตรวจสอบทำให้เพจเผยแพร่ข้อมูลเท็จจาก AI สร้างความเสียหายต่อนักเรียนและผู้ปกครอง จนถูกแจ้งรายงานและสั่งปิดเพจในที่สุด ลองทบทวนบทเรียนแล้วกลับมาแก้ตัวใหม่นะ!';
+                badgeContainer.innerHTML = `
+                    <svg viewBox="0 0 120 120" class="w-full h-full drop-shadow-md" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="60" cy="60" r="46" fill="#FEE2E2" stroke="#EF4444" stroke-width="5"/>
+                        <text x="60" y="65" text-anchor="middle" font-size="34">🚨</text>
+                        <text x="60" y="88" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#B91C1C">SUSPENDED</text>
+                    </svg>
+                `;
+            }
+
+            // Save High Score to LocalStorage
+            let isNewHigh = false;
+            try {
+                const prevHigh = parseInt(localStorage.getItem(STORAGE_KEY_SCORE) || '-1', 10);
+                if (score > prevHigh) {
+                    localStorage.setItem(STORAGE_KEY_SCORE, String(score));
+                    localStorage.setItem(STORAGE_KEY_BADGE, badgeTitleForStorage);
+                    isNewHigh = true;
+                }
+            } catch (e) {}
+
+            const newHighBanner = document.getElementById('new-highscore-banner');
+            if (isNewHigh) newHighBanner.classList.remove('hidden');
+            else newHighBanner.classList.add('hidden');
+
+            // Populate Dashboard Metrics
+            document.getElementById('dash-final-score').textContent = `${score}`;
+            const accuracyPct = Math.round((gameState.correctVerifications / MISSIONS_DATA.length) * 100);
+            document.getElementById('dash-accuracy').textContent = `${accuracyPct}%`;
+            document.getElementById('dash-accuracy-detail').textContent = `จับผิดจุดบกพร่อง AI แม่นยำ ${gameState.correctVerifications}/${MISSIONS_DATA.length} ภารกิจ`;
+            document.getElementById('dash-hints-used').textContent = `${gameState.totalHintsUsed} ครั้ง`;
+
+            // Populate 3-Domain Skill Breakdown
+            const skillsList = document.getElementById('dash-skills-list');
+            const weakAreas = [];
+
+            skillsList.innerHTML = MISSIONS_DATA.map(m => {
+                const res = gameState.skillResults[m.skillKey];
+                let barWidth = '20%';
+                let barColor = 'bg-red-500';
+                let statusPill = 'bg-red-100 text-red-700';
+
+                if (res.status === 'mastered') {
+                    barWidth = '100%';
+                    barColor = 'bg-emerald-500';
+                    statusPill = 'bg-emerald-100 text-emerald-800';
+                } else if (res.status === 'partial') {
+                    barWidth = '60%';
+                    barColor = 'bg-sky-500';
+                    statusPill = 'bg-sky-100 text-sky-800';
+                    weakAreas.push(m.skillName);
+                } else {
+                    weakAreas.push(m.skillName);
+                }
+
+                return `
+                    <div class="bg-slate-50 rounded-2xl p-3 border border-slate-200/80">
+                        <div class="flex flex-wrap items-center justify-between gap-1 mb-1.5">
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">${m.skillName}</span>
+                            <span class="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full ${statusPill}">
+                                ${res.label} ${res.usedHint ? '(ใช้คำใบ้)' : ''}
+                            </span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                            <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width: ${barWidth};"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Personalized Recommendation
+            const recEl = document.getElementById('dash-recommendation');
+            if (weakAreas.length === 0 && gameState.totalHintsUsed === 0) {
+                recEl.textContent = 'ยอดเยี่ยมไร้ที่ติ! คุณมีทักษะการคิดวิเคราะห์ (Critical Thinking) และการรู้เท่าทันดิจิทัล (Digital Literacy) ในระดับสูง สามารถแยกแยะสื่อสังเคราะห์จาก AI ได้ครบทุกมิติโดยไม่ต้องพึ่งตัวช่วย ขอแนะนำให้ต่อยอดสู่การสร้างสรรค์สื่อปลอดภัยในโรงเรียน!';
+            } else if (weakAreas.length === 0) {
+                recEl.textContent = `คุณสามารถตรวจสอบและจับผิดสื่อ AI ได้ครบทั้ง 3 ด้านอย่างแม่นยำ แต่มีการใช้เครื่องมือสแกน AI ช่วยเหลือ ${gameState.totalHintsUsed} ครั้ง ลองฝึกสังเกตจุดผิดปกติด้วยสายตาและการตั้งคำถามด้วยตนเองเพิ่มเติมเพื่อเพิ่มความมั่นใจยิ่งขึ้น!`;
+            } else {
+                recEl.textContent = `ควรทบทวนและฝึกฝนเพิ่มเติมในด้าน: "${weakAreas.join(' และ ')}" โดยฝึกยับยั้งชั่งใจไม่ด่วนกดแชร์ทันที สังเกตความผิดปกติของรายละเอียดเล็กๆ และตรวจสอบย้อนกลับไปยังแหล่งข้อมูลปฐมภูมิเสมอครับ`;
+            }
+        }
+
+        /**
+         * ============================================================================
+         * [ส่วนที่ 10: CONFETTI ANIMATION FOR TRUE ENDING]
+         * ============================================================================
+         */
+        let confettiAnimId = null;
+
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            canvas.classList.remove('hidden');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#0EA5E9', '#10B981', '#F59E0B', '#38BDF8', '#34D399'];
+            const pieces = Array.from({ length: 85 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * -canvas.height,
+                w: 8 + Math.random() * 6,
+                h: 6 + Math.random() * 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vy: 2 + Math.random() * 3.5,
+                vx: -1.5 + Math.random() * 3,
+                rot: Math.random() * Math.PI * 2,
+                vRot: -0.08 + Math.random() * 0.16
+            }));
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.rot += p.vRot;
+                    if (p.y > canvas.height) {
+                        p.y = -20;
+                        p.x = Math.random() * canvas.width;
+                    }
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                });
+                confettiAnimId = requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        function stopConfetti() {
+            if (confettiAnimId) {
+                cancelAnimationFrame(confettiAnimId);
+                confettiAnimId = null;
+            }
+            const canvas = document.getElementById('confetti-canvas');
+            if (canvas) canvas.classList.add('hidden');
+        }
+
+        // Initialize on Window Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedStats();
+        });
+
+        window.addEventListener('resize', () => {
+            if (MISSIONS_DATA[gameState.currentMissionIndex]?.evidenceType === 'audio') {
+                drawAudioVisualizer(gameState.isAudioPlaying);
+            }
+        });
+    </script>
+</body>
+</html>
